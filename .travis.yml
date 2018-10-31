@@ -14,6 +14,7 @@ addons:
     packages:
       - autoconf
       - automake
+      - gawk
       - libtool
       - pkg-config
 
@@ -38,8 +39,6 @@ dist: xenial
 sudo: false
 
 matrix:
-  allow_failures:
-    - os: osx
   fast_finish: true
   include:
     - name: "Coverity Scan"

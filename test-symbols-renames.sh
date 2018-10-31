@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # Written by Zack Weinberg <zackw at panix.com> in 2017.
 # To the extent possible under law, Zack Weinberg has waived all
 # copyright and related or neighboring rights to this work.
@@ -17,7 +17,7 @@
 # $lib_map - full pathname of libcrypt.map.in (used only to locate
 # crypt-port.h and all of the .c files).
 
-set -e
+set -ex
 LC_ALL=C; export LC_ALL
 
 list_library_internals ()
@@ -25,14 +25,15 @@ list_library_internals ()
     eval $(grep old_library= "$1")
     nm -og "${1%/*}/.libs/${old_library}" |
         grep -v ' U ' | cut -d' ' -f3 | sort -u |
-        grep '^_crypt_'
+        grep '^[_]\+crypt_' |
+        sed 's/^[_]*crypt_/_crypt_/g'
     unset old_library
 }
 
 list_symbol_renames ()
 {
     printf '#include "crypt-port.h"\n' |
-        ${CPP-cc -E} ${CPPFLAGS} -dD -xc - |
+        ${CPP-cc -E} ${CPPFLAGS} -dM -E -xc - |
         ${AWK-awk} '
             $1 == "#define" && $3 ~ /^_crypt_/ {
                 print $3

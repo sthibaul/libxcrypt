@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # Written by Zack Weinberg <zackw at panix.com> in 2017.
 # To the extent possible under law, Zack Weinberg has waived all
 # copyright and related or neighboring rights to this work.
@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 EOF
         ${CC-cc} test.c -lcrypt >&2 || exit 77
         if ldd ./a.out | grep -qF libcrypt.so.1; then
-            get_symbols_with_versions $(ldd ./a.out | grep -F libcrypt.so.1 |
+            get_symbols_with_versions $(ldd ./a.out | grep -F 'libcrypt.(dylib|so.1)' |
                                             cut -d' ' -f3)
         else
             exit 77
