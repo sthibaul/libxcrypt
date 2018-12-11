@@ -77,7 +77,11 @@ uninstall-hook-pkgconfig:
 
 # Build libcrypt.so.2 if obsolete APIs are excluded, libcrypt.so.1 otherwise.
 if ENABLE_OBSOLETE_API
+if CYGWIN_BUILD
+libcrypt_la_VERSION = 2:0:2
+else
 libcrypt_la_VERSION = 2:0:1
+endif
 else
 libcrypt_la_VERSION = 2:0:0
 endif

@@ -143,6 +143,11 @@ AC_CACHE_CHECK([how to make linking fail when undefined symbols remain],
     AC_LINK_IFELSE([AC_LANG_PROGRAM([], [int i = 1;])],
       [ac_cv_ld_no_undefined=-Wl,--no-undefined])
   fi
+  if test "x$ac_cv_ld_no_undefined" = xunknown; then
+    LDFLAGS="$SAVED_LDFLAGS -Wl,-no-undefined"
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([], [int i = 1;])],
+      [ac_cv_ld_no_undefined=-Wl,-no-undefined])
+  fi
   LDFLAGS="$SAVED_LDFLAGS"])
 
 UNDEF_FLAG=
@@ -354,6 +359,7 @@ if test x$enable_shared != xyes; then enable_obsolete_api=0; fi
 # Determine whether there's even a GNU libc on this system that we
 # need to be binary backward compatible with.
 SYMVER_FLOOR=none
+cygwin_build=0
 if test $enable_obsolete_api = 1; then
   AC_MSG_CHECKING([minimum symbol version to use for compatibility symbols])
   case $host_os in
@@ -382,6 +388,11 @@ if test $enable_obsolete_api = 1; then
       done < ${srcdir}/libcrypt.minver
     ;;
 
+    *cygwin*|*mingw*)
+      SYMVER_FLOOR="GLIBC_2.0"
+      cygwin_build=1
+    ;;
+
     *gnu*)
         # glibc exists for GNU Hurd, but it is unclear to me whether
         # it has a stable ABI yet.  For now, we are assuming not.
@@ -403,6 +414,9 @@ else
 fi
 AC_SUBST([SYMVER_FLOOR])
 AC_SUBST([SYMVER_MIN])
+AM_CONDITIONAL([CYGWIN_BUILD], [test $cygwin_build = 1])
+AC_DEFINE_UNQUOTED([CYGWIN_BUILD], [$cygwin_build],
+  [Define to 1 if building for Cygwin/MinGW, or 0 otherwise.])
 
 AC_DEFINE_UNQUOTED([SYMVER_FLOOR], [$SYMVER_FLOOR],
   [Define as the lowest compatibility symbol version that is actually

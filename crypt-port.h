@@ -176,9 +176,13 @@ _crypt_strcpy_or_abort (void *, const size_t, const void *);
 #endif
 
 /* Set the symbol version for EXTNAME, which uses INTNAME as its
-   implementation.  */
-#define symver_set(extstr, intname, version, mode) \
-  __asm__ (".symver " #intname "," extstr mode #version)
+   implementation.  Not supported by Cygwin/MinGW.  */
+#if CYGWIN_BUILD
+# define symver_set() __asm__ ("")
+#else
+# define symver_set(extstr, intname, version, mode) \
+   __asm__ (".symver " #intname "," extstr mode #version)
+#endif
 
 /* A construct with the same syntactic role as the expansion of symver_set,
    but which does nothing.  */
