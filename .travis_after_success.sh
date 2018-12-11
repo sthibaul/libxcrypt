@@ -9,6 +9,10 @@ if [[ "$DISTCHECK" == "1" ]]; then
   exit 0
 fi
 
+if [[ "$TRAVIS_OS_NAME" = "windows" ]]; then
+  exit 0
+fi
+
 lcov --directory . --capture --output-file all_coverage.info
 lcov --remove all_coverage.info '/usr/*' '*test*' > coverage.info
 rm all_coverage.info

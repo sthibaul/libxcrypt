@@ -95,6 +95,12 @@ matrix:
       os: osx
       env:
         - CONF="--enable-obsolete-api --enable-hashes=all"
+    - name: "Windows, Cygwin, all hashes, obsolete API"
+      compiler: gcc
+      os: windows
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=all"
+        - CYG_BASH: C:\cygwin\bin\sh
     - name: "GCC, all hashes, obsolete API, no failure-tokens"
       compiler: gcc
       os: linux
@@ -227,13 +233,25 @@ matrix:
         - CONF="--disable-obsolete-api --enable-hashes=yescrypt"
 
 install:
-  - ./.travis_install.sh
+  - bash .travis_install.sh;
 
 before_script:
-  - ./.travis_before_script.sh
+  - if [[ "$TRAVIS_OS_NAME" = "windows" ]]; then
+      %CYG_BASH% .travis_before_script.sh;
+    else
+      ./.travis_before_script.sh;
+    fi
 
 script:
-  - ./.travis_script.sh
+  - if [[ "$TRAVIS_OS_NAME" = "windows" ]]; then
+      %CYG_BASH% .travis_script.sh;
+    else
+      ./.travis_script.sh;
+    fi
 
 after_success:
-  - ./.travis_after_success.sh
+  - if [[ "$TRAVIS_OS_NAME" = "windows" ]]; then
+      %CYG_BASH% .travis_after_success.sh;
+    else
+      ./.travis_after_success.sh;
+    fi
